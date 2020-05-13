@@ -3,9 +3,10 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var signUpRouter = require('./routes/signUp.js');
 var gameRouter = require('./routes/game.js');
+var questRouter= require('./routes/Quest.js')
+
 
 var app = express();
 
@@ -15,8 +16,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/UserBack', indexRouter);
+
+app.use('/UserBack', signUpRouter);
 app.use('/Game', gameRouter);
-//app.use('/users', usersRouter);
+app.use('/Quest',questRouter);
 
 module.exports = app;
