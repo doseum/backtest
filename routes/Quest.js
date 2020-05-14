@@ -27,4 +27,28 @@ router.get('/getQuestList',function(req,res){
   })
 })
 
+//일간 퀘스트 달성여부 확인하고 주간,월간에서는 반복문으로 돌려서 확인
+
+function checkDaily(){
+  //일간 퀘스트 달성여부 확인
+}
+
+router.post('/checkQuest1',function(req,res){
+  var postdata=req.body//temp
+
+  //if(){//일간 예상소비량보다 5%이상 절약
+
+  
+})
+
+router.post('/checkQuest4',function(req,res){
+  //일간 계획소비
+})
+
+router.post('/checkQuest5',function(req,res){
+  //주간 소비절약lv1
+})
+
+router.post('checkQuest')
+
 module.exports = router;

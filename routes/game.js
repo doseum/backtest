@@ -24,7 +24,7 @@ router.get('/getUserDB/:id',function(req,res){
             var billageList=rows
             var calldb=JSON.parse(JSON.stringify(billageList[0]))
             calldb.obj_info=JSON.parse(calldb.obj_info)
-            console.log(calldb);            
+            console.log(calldb);
             res.send(calldb);
         }
     })
@@ -45,6 +45,18 @@ router.post('/addObjinfo/:id',function(req,res){
         }
     })
     //connection.query()
+})
+
+router.get('/getObjectDB',function(req,res){
+    connection.query(`select * from Billage.object`,function(err,rows,fiels){
+        if(!err){
+            var billageList=rows
+
+            console.log(billageList);
+            res.send(billageList);
+        }
+    })
+
 })
 
 module.exports = router;
