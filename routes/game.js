@@ -46,7 +46,7 @@ router.post('/addObjinfo/:id',function(req,res){
     })
     //connection.query()
 })
-router.post('/UpdateCoin:/id',function(req,res){
+router.post('/UpdateCoin/:id',function(req,res){
     //req.body.coin, req.params.id <- user_id
     connection.query(`update Billage.billage set coin = ${req.body.coin} where user_id = ${req.params.id}`,function(err,rows,fiels){
         if(!err){
