@@ -35,7 +35,7 @@ router.post('/addObjinfo/:id',function(req,res){
     //req.body.user_id,req.body.obj_info
     var Obj_info = req.body.ObjInfo;
     console.log("Obj_info = " +Obj_info);
-    connection.query(`update Billage.billage set Obj_info = '${req.body.ObjInfo}'`,function(err,rows,fiels){
+    connection.query(`update Billage.billage set Obj_info = '${req.body.ObjInfo}' where user_id = ${req.params.id}`,function(err,rows,fiels){
         if(!err){
             console.log("Success in node");
         }
@@ -46,7 +46,17 @@ router.post('/addObjinfo/:id',function(req,res){
     })
     //connection.query()
 })
-
+router.post('/UpdateCoin:/id',function(req,res){
+    //req.body.coin, req.params.id <- user_id
+    connection.query(`update Billage.billage set coin = ${req.body.coin} where user_id = ${req.params.id}`,function(err,rows,fiels){
+        if(!err){
+            console.log("Success in node");
+        }
+        else{
+            console.log("Fail in node");
+        }
+    })
+})
 router.get('/getObjectDB',function(req,res){
     connection.query(`select * from Billage.object`,function(err,rows,fiels){
         if(!err){
