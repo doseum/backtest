@@ -1,11 +1,10 @@
 var express = require('express');
 var app= express()
 var router = express.Router();
+var mysql=require('mysql')
 var bodyParser=require('body-parser')
 
 app.use(bodyParser.urlencoded({extended:true}))
-
-var mysql=require('mysql')
 
 var connection=mysql.createConnection({
   host:'3.17.141.131',
@@ -15,7 +14,24 @@ var connection=mysql.createConnection({
   database:'Billage'
 })
 
-connection.connect()
+function handleDisconnect(){
+  connection.connect(function(err){
+    if(err){
+      console.log('error when connecting to db',err);
+      setTimeout(handleDisconnect,2000)
+    }
+  })
+  connection.on('error',function(err){
+    console.log('db error',err);
+    if(err.code==='PROTOCOL_CONNECTION_LOST'){
+      return handleDisconnect();
+    }else{
+      throw err;
+    }
+  })
+}
+
+handleDisconnect();
 
 router.get('/getQuestList',function(req,res){
   connection.query("select * from Billage.quest",function(err,rows,fields){
@@ -38,7 +54,7 @@ router.post('/checkQuest1',function(req,res){
 
   //if(){//일간 예상소비량보다 5%이상 절약
 
-  
+
 })
 
 router.post('/checkQuest4',function(req,res){
