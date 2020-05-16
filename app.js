@@ -17,7 +17,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/UserBack', signUpRouter);
+app.use('/SignUp', signUpRouter);
 app.use('/Game', gameRouter);
 app.use('/Quest',questRouter);
 

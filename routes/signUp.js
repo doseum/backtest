@@ -14,33 +14,12 @@ var connection=mysql.createConnection({
   database:'Billage'
 })
 
-function handleDisconnect(){
-  connection.connect(function(err){
-    if(err){
-      console.log('error when connecting to db',err);
-      setTimeout(handleDisconnect,2000)
-    }
-  })
-  connection.on('error',function(err){
-    console.log('db error',err);
-    if(err.code==='PROTOCOL_CONNECTION_LOST'){
-      return handleDisconnect();
-    }else{
-      throw err;
-    }
-  })
-}
+connection.connect();
 
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
-
-router.post('/SignUp',function(req,res){
+router.post('/',function(req,res){
   //데이터를 json형식으로 parsing
   var str=JSON.stringify(req.body);
-  var postdata=JSON.parse(JSON.parse(str.substring(1,str.length-4)));
+  var postdata=JSON.parse(Object.keys(JSON.parse(str)));
   console.log(postdata);
 
   if(postdata.name){//이름 검사
