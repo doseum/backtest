@@ -42,7 +42,7 @@ router.post('/checkQuest',function(req,res){
 
 function checkDailySave(targetDay,Data,expectation){
   //특정 날짜의 일간 절약 퀘스트 달성여부 확인
-  for(int i=0;i<Data.length;i++){
+  for(i=0;i<Data.length;i++){
     if(Data[i].date==targetDay){
       if(IsDailySaveLv1(parseFloat(Data[i].cost),expectation)){
         return 1
