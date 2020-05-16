@@ -14,15 +14,7 @@ var connection=mysql.createConnection({
   database:'Billage'
 })
 
-router.get('/getQuestList',function(req,res){
-  connection.query("select * from Billage.quest",function(err,rows,fields){
-    if(!err){
-      var questList=rows
-      console.log(questList);
-      res.send(questList[0]);
-    }
-  })
-})
+connection.connect();
 
 router.post('/checkQuest',function(req,res){
   var questList;
@@ -77,23 +69,5 @@ function IsDailySaveLv3(cost,expectation){
   if(cost<=expectation*0.8) return true;
   else false;
 }
-
-router.post('/checkQuest1',function(req,res){
-  var postdata=req.body//temp
-
-  //if(){//일간 예상소비량보다 5%이상 절약
-
-
-})
-
-router.post('/checkQuest4',function(req,res){
-  //일간 계획소비
-})
-
-router.post('/checkQuest5',function(req,res){
-  //주간 소비절약lv1
-})
-
-router.post('checkQuest')
 
 module.exports = router;
