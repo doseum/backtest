@@ -16,24 +16,69 @@ var connection=mysql.createConnection({
 
 connection.connect();
 
+function calDate(today,daybefore){
+  //today는 String,daybefore는 int
+  if(daybefore==0) return today;
+  else{
+    var tmp=String(parseInt(today.replace(/-/gi,""))-daybefore)
+    var targetDay=tmp.substr(0,4)+"-"+tmp.substr(4,2)+"-"+tmp.substr(6,2)
+    return targetDay
+  }
+}
+
 router.post('/checkQuest',function(req,res){
-  var questList;
   var str=JSON.stringify(req.body)
   var postdata=JSON.parse(Object.keys(JSON.parse(str)));
   console.log(postdata);
-  var tmp=String(parseInt(postdata.today.replace(/-/gi,""))-1)
-  var yesterday=tmp.substr(0,4)+"-"+tmp.substr(4,2)+"-"+tmp.substr(6,2)
+  var yesterday=calDate(postdata.today,1)
   console.log(yesterday);
+  var questList;
 
   connection.query("select * from Billage.quest",function(err,rows,fields){
     if(!err){
       questList=rows
       console.log(questList);
+    }else{
+      console.log("questList select error");
     }
   })
 
+  //일간 소비절약 완료 확인
   if(checkDailySave(yesterday,postdata.daily,expectation)==1){
-    //connection.query(`insert into`)
+    questList[0].complete=1;
+  }else if(checkDailySave(yesterday,postdata.daily,expectation)==2){
+    questList[0].complete=1
+    questList[1].complete=1;
+  }else if(checkDailySave(yesterday,postdata.daily,expectation)==3){
+    questList[0].complete=1
+    questList[1].complete=1;
+    questList[2].complete=1
+  }
+  //일간 계획소비 완료 확인
+  if(checkDailyPlan(yesterday,postdata.daily,expectation)){
+    questList[3].complete=1;
+  }
+  //주간 소비 절약 확인
+  if(checkWeeklySave(postdata.today,postdata.day,postdata.daily,expectation)==1){
+    questList[4].complete=1
+  }else if(checkWeeklySave(postdata.today,postdata.day,postdata.daily,expectation)==2){
+    questList[4].complete=1
+    questList[5].complete=1
+  }else if(checkWeeklySave(postdata.today,postdata.day,postdata.daily,expectation)==3){
+    questList[4].complete=1
+    questList[5].complete=1
+    questList[6].complete=1
+  }
+  //주간 계획 소비 확인
+  if(checkWeeklyPlan(postdata.today,postdata.day,postdata.daily,expectation)==1){
+    questList[7].complete=1
+  }else if(checkWeeklyPlan(postdata.today,postdata.day,postdata.daily,expectation)==2){
+    questList[7].complete=1
+    questList[8].complete=1
+  }else if(checkWeeklyPlan(postdata.today,postdata.day,postdata.daily,expectation)==1){
+    questList[7].complete=1
+    questList[8].complete=1
+    questList[9].complete=1
   }
 
 })
@@ -55,6 +100,23 @@ function checkDailySave(targetDay,Data,expectation){
   }
 }
 
+function checkWeeklySave(today,day,Data,expectation){
+  var result=[];
+  for(i=0;i<day;i++){
+    result.push(checkDailySave(calDate(today,i),Data,expectation))
+  }
+  var countLv1=0;
+  var countLv2=0;
+  for(i=0;i<result.length;i++){
+    if(result[i]==1) countLv1++;
+    else if (result[i]==2||result[i]==3) countLv2++;
+  }
+  if(countLv2>=7) return 3
+  else if(countLv2<7&&countLv2>=5) return 2
+  else if(countLv1>=3) return 1
+  else return 0
+}
+
 function IsDailySaveLv1(cost,expectation){
   if(cost>expectation*0.9&&cost<=expectation*0.95) return true;
   else false;
@@ -68,6 +130,27 @@ function IsDailySaveLv2(cost,expectation){
 function IsDailySaveLv3(cost,expectation){
   if(cost<=expectation*0.8) return true;
   else false;
+}
+
+function checkDailyPlan(targetDay,Data,expectation){
+  //특정 날짜의 일간 계획소비 퀘스트 달성여부 확인
+  if(i=0;i<Data.length;i++){
+    if(Data[i].date==targetDay){
+      if(parseFloat(Data[i].cost)<=expectation*1.05&&parseFloat(Data[i].cost)>=expectation*0.95) return 1
+      else return 0;
+    }
+  }
+}
+
+function checkWeeklyPlan(today,day,Data,expectation){
+  var count=0;
+  for(i=0;i<day;i++){
+    if(checkDailyPlan(calDate(today,i),Data,expectation)==1) count++;
+  }
+  if(count>=7) return 3
+  else if(count>=5&&count<7) return 2
+  else if(count<5&&count>=3) return 1
+  else return 0
 }
 
 module.exports = router;
