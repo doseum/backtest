@@ -31,14 +31,16 @@ router.get('/getUserDB/:id',function(req,res){
 
 router.post('/addObjinfo/:id',function(req,res){
     //req.body.user_id,req.body.obj_info
-    var Obj_info = req.body.ObjInfo;
-    connection.query(`update Billage.billage set Obj_info = '${req.body.ObjInfo}' where user_id = ${req.params.id}`,function(err,rows,fiels){
+
+    connection.query(`update Billage.billage set Obj_info = '${req.body.ObjInfo}',coin = '${req.body.coin}',billage_cost = '${req.body.billagecost}' where user_id = ${req.params.id}`,function(err,rows,fiels){
         if(!err){
-            console.log("Success in node");
+            res.send("Obj update success");
+            console.log("Obj정보 업데이트 성공");
         }
         else
         {
-            console.log("Fail in node");
+            res.send("Obj update fail");
+            console.log("Obj정보 업데이트 실패!");
         }
     })
     //connection.query()
