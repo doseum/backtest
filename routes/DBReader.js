@@ -14,7 +14,25 @@ var connection=mysql.createConnection({
   database:'Billage'
 })
 
-connection.connect();
+function handleDisconnect(){
+    connection.connect(function(err){
+      if(err){
+        console.log('error on connecting to DB',err);
+        setTimeout(handleDisconnect,2000)
+      }
+    })
+
+    connection.on('error',function(err){
+      console.log('DB error',err);
+      if(err.code==='PROTOCOL_CONNECTION_LOST'){
+        return handleDisconnect()
+      }else{
+        throw err;
+      }
+    })
+}
+
+handleDisconnect();
 
 router.get('/Coin/:idx',function(req,res){
   connection.query(`select coin from Billage.billage where user_id=${req.params.idx}`,function(err,rows,fields){
@@ -23,7 +41,23 @@ router.get('/Coin/:idx',function(req,res){
       res.write(JSON.stringify(rows[0].coin))
       res.end();
     }else{
+      res.write("getcoin error")
+      res.end()
       console.log("getcoin error");
+    }
+  })
+})
+
+router.get('/Like/:idx',function(req,res){
+  connection.query(`select billage_like from Billage.billage where user_id=${req.params.idx}`,function(err,rows,fields){
+    if(!err){
+      console.log(JSON.stringify(rows[0].billage_like));
+      res.write(JSON.stringify(rows[0].billage_like))
+      res.end()
+    }else{
+      res.write("getLike error")
+      res.end()
+      console.log("getLike error");
     }
   })
 })

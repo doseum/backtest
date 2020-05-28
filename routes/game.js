@@ -14,7 +14,25 @@ var connection=mysql.createConnection({
   database:'Billage'
 })
 
-connection.connect();
+function handleDisconnect(){
+    connection.connect(function(err){
+      if(err){
+        console.log('error on connecting to DB',err);
+        setTimeout(handleDisconnect,2000)
+      }
+    })
+
+    connection.on('error',function(err){
+      console.log('DB error',err);
+      if(err.code==='PROTOCOL_CONNECTION_LOST'){
+        return handleDisconnect()
+      }else{
+        throw err;
+      }
+    })
+}
+
+handleDisconnect();
 
 router.get('/getUserDB/:id',function(req,res){
     //req에는 userid, res로는 userid에 해당하는 billage정보
@@ -69,7 +87,7 @@ router.post('/UpdateBillageCost/:id',function(req,res){
 })
 router.post('/UpdateCoinAndBillageCost/:id',function(req,res){
     //req.body.coin,req.body.billage_cost, req.params.id <- user_id
-    
+
     connection.query(`update Billage.billage set coin = ${req.body.coin},billage_cost = ${req.body.billage_cost} where user_id = ${req.params.id}`,function(err,rows,fiels){
         if(!err){
             console.log("코인과 코스트 업데이트 성공");
@@ -91,7 +109,7 @@ router.get('/getObjectDB',function(req,res){
 router.get('/getRankingDB',function(req,res){
     connection.query(`select user.user_id,nickname,billage_cost,billage_like from Billage.billage left join Billage.user On user.user_id = billage.user_id order by billage_cost DESC;`,function(err,rows,fiels){
         if(!err){
-            var RankingDBList=rows;           
+            var RankingDBList=rows;
             res.send(RankingDBList);
         }
     })
@@ -101,7 +119,7 @@ router.get('/getRankingDB',function(req,res){
 router.get('/getLikeRankingDB',function(req,res){
     connection.query(`select user.user_id,nickname,billage_cost,billage_like from Billage.billage left join Billage.user On user.user_id = billage.user_id order by billage_like DESC;`,function(err,rows,fiels){
         if(!err){
-            var RankingDBList=rows;          
+            var RankingDBList=rows;
             res.send(RankingDBList);
         }
     })
