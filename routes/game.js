@@ -6,15 +6,19 @@ var bodyParser=require('body-parser')
 
 app.use(bodyParser.urlencoded({extended:true}))
 
-var connection=mysql.createConnection({
+var db_config={
   host:'3.17.141.131',
   port:3306,
   user:'root',
   password:'*tmddn1010914',
   database:'Billage'
-})
+}
+var connection;
 
 function handleDisconnect(){
+
+    connection=mysql.createConnection(db_config)
+
     connection.connect(function(err){
       if(err){
         console.log('error on connecting to DB',err);
@@ -25,7 +29,7 @@ function handleDisconnect(){
     connection.on('error',function(err){
       console.log('DB error',err);
       if(err.code==='PROTOCOL_CONNECTION_LOST'){
-        return handleDisconnect()
+        handleDisconnect()
       }else{
         throw err;
       }
