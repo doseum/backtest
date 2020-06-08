@@ -90,4 +90,27 @@ router.post('/Nickname/:idx',function(req,res){
   })
 
 })
+
+router.post('/Intro/:idx',function(req,res){
+  req.body=JSON.parse(Object.keys(JSON.parse(JSON.stringify((req.body)))))
+  console.log(req.body);
+
+  if(req.body.intro.length>100){
+    res.write("introduction length can't be longer than 100 characters")
+    res.end()
+  }
+
+  connection.query(`update Billage.billage set billage_intro="${req.body.intro}" where user_id=${req.params.idx}`,function(err,rows,fields){
+    if(!err){
+      connection.query(`select billage_intro from Billage.billage where user_id=${req.params.idx}`,function(err,rows,fields){
+        res.write(JSON.stringify(rows[0].billage_intro))
+        res.end()
+      })
+    }else{
+      res.write(err)
+      res.end()
+      console.log(err);
+    }
+  })
+})
 module.exports = router;
